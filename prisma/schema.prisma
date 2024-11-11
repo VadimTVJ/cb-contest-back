@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Asset {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  name            String
+  assetCode       String
+  appearanceColor String
+
+  storeGifts StoreGift[]
+
+  @@map("asset")
+}
+
+model StoreGift {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  name                String
+  totalQuantity       Int
+  purchasedQuantity   Int             @default(0)
+  previewGradientFrom String
+  previewGradientTo   String
+  price               Float
+  lottieUrl           String
+  purchasedGifts      PurchasedGift[]
+  invoices            Invoice[]
+
+  assetId Int
+  asset   Asset @relation(fields: [assetId], references: [id])
+
+  @@map("store-gift")
+}
+
+model PurchasedGift {
+  id Int @id @default(autoincrement())
+
+  purchasedDate DateTime  @default(now())
+  receivedDate  DateTime?
+
+  index        Int
+  activateHash String @unique
+  feeds        Feed[]
+
+  storeGiftId Int
+  storeGift   StoreGift @relation(fields: [storeGiftId], references: [id])
+
+  customerTgId Int  @db.UnsignedInt
+  customer     User @relation("customer", fields: [customerTgId], references: [tgId])
+
+  recipientTgId Int?  @db.UnsignedInt
+  recipient     User? @relation("recipient", fields: [recipientTgId], references: [tgId])
+
+  @@map("purchased-gift")
+}
+
+enum FeedAction {
+  sent_gift
+  buy_gift
+  receive_gift
+}
+
+model Feed {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  action FeedAction
+
+  purchasedGiftId Int
+  purchasedGift   PurchasedGift @relation(fields: [purchasedGiftId], references: [id])
+
+  tgId Int  @db.UnsignedInt
+  user User @relation(fields: [tgId], references: [tgId])
+
+  @@map("feed")
+}
+
+enum InvoiceStatus {
+  active
+  paid
+  expired
+}
+
+model Invoice {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  invoiceId   Int           @unique
+  invoiceHash String
+  status      InvoiceStatus
+
+  storeGiftId Int
+  storeGift   StoreGift @relation(fields: [storeGiftId], references: [id])
+
+  tgId Int  @db.UnsignedInt
+  user User @relation(fields: [tgId], references: [tgId])
+
+  @@map("invoice")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  tgId               Int       @unique @db.UnsignedInt
+  firstName          String
+  lastName           String?
+  hasPremium         Boolean
+  avatarUrl          String?
+  receivedGiftsCount Int       @default(0)
+  feed               Feed[]
+  invoices           Invoice[]
+
+  purchasedGifts PurchasedGift[] @relation("customer")
+  receivedGifts  PurchasedGift[] @relation("recipient")
+
+  @@map("user")
+}

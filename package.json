@@ -1,0 +1,43 @@
+{
+  "name": "crypto-back",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config --watch src src/index.ts",
+    "build": "tsc",
+    "start": "node -r dotenv/config dist/index.js",
+    "lint": "eslint --report-unused-disable-directives src/**/*.ts --fix  && tsc --noEmit",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@prisma/client": "^5.22.0",
+    "@sinclair/typebox": "^0.33.21",
+    "@telegram-apps/init-data-node": "^1.1.1",
+    "axios": "^1.7.7",
+    "dayjs": "^1.11.13",
+    "fastify": "^5.1.0",
+    "grammy": "^1.31.0",
+    "http-errors": "^2.0.0",
+    "ts-deepmerge": "^7.0.1",
+    "uuid": "^11.0.2"
+  },
+  "devDependencies": {
+    "@grammyjs/types": "^3.15.0",
+    "@types/http-errors": "^2.0.4",
+    "@types/node": "^22.9.0",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "6.7.5",
+    "@typescript-eslint/parser": "6.7.5",
+    "dotenv": "^16.4.5",
+    "eslint": "8.51.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-airbnb-typescript": "17.1.0",
+    "eslint-plugin-import": "2.30.0",
+    "husky": "^9.1.6",
+    "nodemon": "^3.1.7",
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "5.1.6"
+  }
+}
